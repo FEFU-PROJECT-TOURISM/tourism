@@ -1,0 +1,98 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    hostname: backend
+    volumes:
+      - ./backend/src:/backend/src
+    ports:
+      - 8000:8000
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    hostname: frontend
+    volumes:
+      - ./frontend/src:/frontend/src
+      - ./frontend/public:/frontend/public
+    ports:
+      - 5173:5173
+    environment:
+      - CHOKIDAR_USEPOLLING=true # для windows, без этого не подгружает изменения в запущенное приложение
+
+  db:
+    image: postgres:17
+    container_name: db
+    hostname: db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-tourism:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d tourism_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  db-adminer:
+    image: adminer
+    container_name: db_editor
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_PORT=${DB_PORT}
+      - POSTGRES_DB=${DB_NAME}
+    expose:
+      - 8080
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+
+   # Prometheus — сбор метрик
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    hostname: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'  # Позволяет перезагружать конфиг без перезапуска
+    depends_on:
+      - backend
+
+  # Grafana — визуализация
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - "3001:3000" 
+    volumes:
+      - grafana_storage:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    depends_on:
+      - prometheus
+
+volumes:
+  postgres-tourism:
+  prometheus_data:
+  grafana_storage:

@@ -1,9 +1,15 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from prometheus_fastapi_instrumentator import Instrumentator
+from api.endpoint import router
 
 
 def init_app() -> FastAPI:
     app = FastAPI()
-
+    Instrumentator().instrument(app).expose(app)
+    app.include_router(router)
+    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
     return app
 
 
@@ -12,4 +18,4 @@ backend_app = init_app()
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:backend_app", host="localhost", port=8000, reload=True)
+    uvicorn.run("main:backend_app", host="0.0.0.0", port=8000, reload=True)
