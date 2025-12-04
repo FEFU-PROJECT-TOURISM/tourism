@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from api.depends.db import db_dep
+from model.schemas.tour import TourAdd, TourAddReq
 from view.tour import TourView
 
 router = APIRouter(prefix="/tour", tags=["Tour"])
@@ -16,5 +17,9 @@ async def get_tours(
 @router.post("")
 async def create_tour(
     db: db_dep,
+    tour: TourAddReq,
+
 ):
-    pass
+    return await TourView(db=db).create_tour(
+        tour=tour
+    )

@@ -1,0 +1,21 @@
+/* Добавьте в CreatePointForm.css или App.css */
+.photo-preview {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.upload-progress {
+  margin: 12px 0;
+  text-align: center;
+}
+
+.progress-bar {
+  display: block;
+  height: 6px;
+  background: #1a5fb4;
+  border-radius: 3px;
+  transition: width 0.2s;
+  margin-bottom: 4px;
+}
