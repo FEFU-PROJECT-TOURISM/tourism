@@ -8,5 +8,5 @@ class PointMediaAdd(BaseModel):
     point_id: int
 
 
-class PointMedia(PointMediaAdd, Id):
+class PointMedia(PointMediaAdd):
     pass

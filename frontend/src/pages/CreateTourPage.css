@@ -1,0 +1,56 @@
+/* src/pages/CreateTourPage.css */
+.create-tour-page {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f9fbfd;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.create-tour-page h1 {
+  text-align: center;
+  color: #1a5fb4;
+  margin-bottom: 32px;
+}
+
+.point-selector,
+.create-point-form,
+.tour-form {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+button {
+  background: #1a5fb4;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:disabled {
+  background: #9ec6f0;
+  cursor: not-allowed;
+}
+
+li {
+  margin: 8px 0;
+}
+
+h3 {
+  color: #1a5fb4;
+  margin-top: 0;
+}

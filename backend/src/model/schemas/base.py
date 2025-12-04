@@ -11,3 +11,7 @@ class Description(BaseModel):
 
 class Id(BaseModel):
     id: int
+
+
+class TourId(BaseModel):
+    tour_id: int

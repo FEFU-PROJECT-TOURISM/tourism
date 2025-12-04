@@ -42,7 +42,8 @@ class S3Client:
 
     @property
     def base_link(self):
-        return f"{self.endpoint_url}/{self.bucket_name}"
+        # return f"{self.endpoint_url}/{self.bucket_name}"
+        return f"https://a2e754d9-a4be-4456-bfa3-662ddc1ab03d.selstorage.ru"
 
 
     def generate_filename(self, file_type) -> str:

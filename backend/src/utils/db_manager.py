@@ -2,6 +2,7 @@ from repository.media import MediaRepository
 from repository.point import PointRepository
 from repository.point_media import PointMediaRepository
 from repository.tour import TourRepository
+from repository.tour_point import TourPointRepository
 
 
 class DBManager:
@@ -13,6 +14,7 @@ class DBManager:
     async def __aenter__(self):
         self._async_session = self._async_session_factory()
         self.tour = TourRepository(self._async_session)
+        self.tour_point = TourPointRepository(self._async_session)
         self.point = PointRepository(self._async_session)
         self.media = MediaRepository(self._async_session)
         self.point_media = PointMediaRepository(self._async_session)
