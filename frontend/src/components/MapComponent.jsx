@@ -1,5 +1,5 @@
 // src/components/MapComponent.jsx
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { loadYmapsComponents } from '../lib/ymaps';
 
 const MapComponent = ({
@@ -12,6 +12,7 @@ const MapComponent = ({
 }) => {
   const [components, setComponents] = useState(null);
   const [error, setError] = useState(null);
+  const mapRef = useRef(null);
 
   // Загружаем компоненты карты при монтировании
   useEffect(() => {
@@ -67,17 +68,6 @@ const MapComponent = ({
       zoom: 12,
     };
   }, [points, mapCenter, zoom]);
-
-  // Обработчик клика по карте (всегда вызывается)
-  const handleMapClick = useCallback(
-    (e) => {
-      if (onSelectLocation) {
-        const coords = e.detail.coordinates;
-        onSelectLocation({ latitude: coords[1], longitude: coords[0] });
-      }
-    },
-    [onSelectLocation]
-  );
 
   // Согласно документации: используем reactify.useDefault для location
   // ВАЖНО: этот useMemo должен вызываться ВСЕГДА, до проверки components
@@ -140,6 +130,7 @@ const MapComponent = ({
     YMapMarker,
     YMapControls,
     YMapFeature,
+    YMapListener,
     reactify,
   } = components;
 
@@ -172,11 +163,9 @@ const MapComponent = ({
     );
   }
 
-  // Логируем для отладки
-  console.log('Рендерим карту с location:', calculatedLocation, 'points:', points.length);
-
   return (
     <div
+      ref={mapRef}
       style={{
         width: '100%',
         height: '400px',
@@ -184,11 +173,49 @@ const MapComponent = ({
         borderRadius: '12px',
         overflow: 'hidden',
       }}
+      onClick={(e) => {
+        // Обработчик клика через DOM как fallback
+        if (!onSelectLocation || !mapRef.current) return;
+        
+        // Проверяем, что клик был по контейнеру карты, а не по дочерним элементам
+        if (e.target === mapRef.current || mapRef.current.contains(e.target)) {
+          // Получаем координаты клика относительно контейнера
+          const rect = mapRef.current.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          // Пытаемся получить экземпляр карты из глобального объекта
+          if (window.ymaps3 && window.ymaps3.ready) {
+            window.ymaps3.ready.then(() => {
+              // Ищем экземпляр карты в DOM
+              const mapElement = mapRef.current.querySelector('[class*="ymaps3"]');
+              if (mapElement && mapElement._ymaps3_map) {
+                try {
+                  const mapInstance = mapElement._ymaps3_map;
+                  if (mapInstance && typeof mapInstance.screenToGeo === 'function') {
+                    const coords = mapInstance.screenToGeo([x, y]);
+                    if (coords && Array.isArray(coords) && coords.length >= 2) {
+                      console.log('Координаты клика через screenToGeo:', coords);
+                      onSelectLocation({ latitude: coords[1], longitude: coords[0] });
+                    }
+                  }
+                } catch (err) {
+                  console.warn('Ошибка конвертации координат:', err);
+                }
+              }
+            });
+          }
+        }
+      }}
     >
       <YMap
+        ref={(node) => {
+          if (node && node._ymaps3_map) {
+            mapRef.current._mapInstance = node._ymaps3_map;
+          }
+        }}
         location={location}
         mode="vector"
-        onClick={onSelectLocation ? handleMapClick : undefined}
         style={{
           width: '100%',
           height: '100%',
@@ -196,6 +223,59 @@ const MapComponent = ({
       >
         <YMapDefaultSchemeLayer />
         <YMapDefaultFeaturesLayer />
+
+        {/* Обработчик клика по карте через YMapListener */}
+        {onSelectLocation && YMapListener && (
+          <YMapListener
+            layer="any"
+            onClick={(layer, eventObject, object) => {
+              // Согласно документации: обработчик может принимать (layer, eventObject, object)
+              // или (domEventObject) в формате { object, event }
+              
+              // Если пришло в формате (layer, eventObject, object)
+              if (eventObject && typeof eventObject === 'object' && 'coordinates' in eventObject) {
+                // Игнорируем события типа 'hotspot' (клики по иконкам на карте)
+                if (object && object.type === 'hotspot') {
+                  return;
+                }
+                
+                // eventObject.coordinates — географические координаты точки клика
+                if (eventObject.coordinates && Array.isArray(eventObject.coordinates)) {
+                  const coords = eventObject.coordinates;
+                  console.log('Координаты клика из eventObject:', coords);
+                  // coords — массив [lng, lat]
+                  onSelectLocation({ latitude: coords[1], longitude: coords[0] });
+                  return;
+                }
+              }
+              
+              // Если пришло в формате { object, event }
+              if (layer && layer.object && layer.event) {
+                const { object, event } = layer;
+                
+                // Игнорируем события типа 'hotspot'
+                if (object && object.type === 'hotspot') {
+                  return;
+                }
+                
+                // event содержит географические координаты
+                if (event && event.coordinates) {
+                  const coords = event.coordinates;
+                  console.log('Координаты клика из event:', coords);
+                  onSelectLocation({ latitude: coords[1], longitude: coords[0] });
+                  return;
+                }
+              }
+              
+              // Если пришло напрямую как объект
+              if (layer && layer.type === 'hotspot') {
+                return;
+              }
+              
+              console.warn('Не удалось получить координаты из события:', { layer, eventObject, object });
+            }}
+          />
+        )}
 
         {/* Элементы управления картой (если доступны) */}
         {YMapControls && (
