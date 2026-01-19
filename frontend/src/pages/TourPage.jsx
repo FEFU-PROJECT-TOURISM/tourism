@@ -79,19 +79,49 @@ const TourPage = () => {
               <span className="stat-icon">📍</span>
               <span>{pointsCount} {pointsCount === 1 ? 'точка' : pointsCount < 5 ? 'точки' : 'точек'}</span>
             </div>
+            {tour.organization && (
+              <div className="stat-item">
+                <span className="stat-icon">🏢</span>
+                <span>{tour.organization.name}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="tour-content">
+        {tour.organization && (
+          <div className="tour-organization-section">
+            <div className="section-header">
+              <h2>Организация</h2>
+              <p>Информация об организации, создавшей этот тур</p>
+            </div>
+            <div className="organization-card">
+              <div className="org-info">
+                <h3>{tour.organization.name}</h3>
+                <p className="org-email">{tour.organization.email}</p>
+                {tour.organization.phones && tour.organization.phones.length > 0 && (
+                  <div className="org-phones">
+                    <span className="phones-label">Телефоны:</span>
+                    {tour.organization.phones.map((phone, idx) => (
+                      <span key={idx} className="phone-item">+{phone.phone}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="tour-map-section">
           <div className="section-header">
             <h2>Маршрут на карте</h2>
-            <p>Просмотрите все точки тура на интерактивной карте</p>
+            <p>Просмотрите все точки тура на интерактивной карте с маршрутом</p>
           </div>
           <div className="map-wrapper">
             <MapComponent
               points={tour.points}
+              showRoute={true}
               onPointClick={(point) => {
                 const element = document.getElementById(`point-${point.id}`);
                 if (element) {
@@ -101,8 +131,9 @@ const TourPage = () => {
               center={
                 tour.points.length > 0
                   ? [tour.points[0].latitude, tour.points[0].longitude]
-                  : null
+                  : [43.1155, 131.8855]
               }
+              zoom={12}
             />
           </div>
         </div>

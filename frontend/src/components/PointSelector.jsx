@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { getPoints } from '../services/api';
 import './PointSelector.css';
 
-const PointSelector = ({ selectedIds, onToggle }) => {
+const PointSelector = ({ selectedPoints = [], onToggle }) => {
   const [points, setPoints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -63,7 +63,7 @@ const PointSelector = ({ selectedIds, onToggle }) => {
 
       <div className="selected-count">
         <span className="count-badge">
-          Выбрано: <strong>{selectedIds.length}</strong>
+          Выбрано: <strong>{selectedPoints.length}</strong>
         </span>
       </div>
 
@@ -82,20 +82,20 @@ const PointSelector = ({ selectedIds, onToggle }) => {
       ) : (
         <div className="points-grid">
           {filteredPoints.map(point => {
-            const isSelected = selectedIds.includes(point.id);
+            const isSelected = selectedPoints.some(p => p.id === point.id);
             const imageUrl = point.media?.[0]?.url;
             
             return (
               <div
                 key={point.id}
                 className={`point-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => onToggle(point.id)}
+                onClick={() => onToggle(point)}
               >
                 <div className="point-checkbox">
                   <input
                     type="checkbox"
                     checked={isSelected}
-                    onChange={() => onToggle(point.id)}
+                    onChange={() => onToggle(point)}
                     onClick={(e) => e.stopPropagation()}
                   />
                   <span className="checkmark"></span>

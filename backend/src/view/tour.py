@@ -16,7 +16,7 @@ class TourView(BaseView):
 
     async def create_tour(self, tour: TourAddReq, org_id: int):
         created_tour = await TourService(db=self._db).create_tour(tour, org_id)
-        created_tour_points = await TourPointService(db=self._db).create_tour_point(created_tour.id, tour.tour_point_ids)
+        created_tour_points = await TourPointService(db=self._db).create_tour_point(created_tour.id, tour.tour_points)
         await self._db.commit()
         return "OK"
     

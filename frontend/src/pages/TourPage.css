@@ -121,10 +121,52 @@
   padding: 0 var(--spacing-xl) var(--spacing-2xl);
 }
 
+.tour-organization-section,
 .tour-map-section,
 .tour-points-section {
   margin-bottom: var(--spacing-2xl);
   animation: fadeIn 0.6s ease-out;
+}
+
+.organization-card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.org-info h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.org-email {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.org-phones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.phones-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.phone-item {
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .section-header {

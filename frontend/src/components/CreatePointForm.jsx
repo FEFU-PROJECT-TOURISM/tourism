@@ -151,7 +151,8 @@ const CreatePointForm = ({ onPointCreated }) => {
               setLatitude(lat.toFixed(6));
               setLongitude(lng.toFixed(6));
             }}
-            center={latitude && longitude ? [+latitude, +longitude] : [55.7558, 37.6176]}
+            center={latitude && longitude ? [+latitude, +longitude] : [43.1155, 131.8855]}
+            zoom={12}
           />
         </div>
 

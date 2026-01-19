@@ -38,3 +38,4 @@ class TourPointOrm(Base, Id, TourId):
     __tablename__ = "TourPoint"
 
     point_id: Mapped[int] = mapped_column(ForeignKey("Point.id"))
+    order: Mapped[int] = mapped_column(default=0, server_default="0")
