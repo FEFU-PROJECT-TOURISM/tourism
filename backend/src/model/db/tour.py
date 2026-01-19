@@ -1,4 +1,4 @@
-from sqlalchemy import String
+from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -10,6 +10,7 @@ class TourOrm(Base, Id):
 
     name: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(String(255))
-
+    org_id: Mapped[int] = mapped_column(ForeignKey("Organization.id"))
 
     points: Mapped[list['PointOrm']] = relationship(back_populates='tour', secondary='TourPoint')
+    organization: Mapped["OrganizationOrm"] = relationship(back_populates="tours")

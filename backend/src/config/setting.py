@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     S3_BUCKET_NAME: str
     # S3_REGION: str
 
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str = "HS256"
+    JWT_MIN: int = 0
+    JWT_HOUR: int = 0
+    JWT_DAY: int = 1
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore"

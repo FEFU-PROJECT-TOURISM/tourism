@@ -6,10 +6,16 @@ from api.endpoint import router
 
 
 def init_app() -> FastAPI:
-    app = FastAPI()
+    app = FastAPI(root_path="/api")
     Instrumentator().instrument(app).expose(app)
     app.include_router(router)
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     return app
 
 
