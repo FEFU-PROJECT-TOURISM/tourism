@@ -1,61 +1,82 @@
 // src/components/TourCard.jsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './TourCard.css';
 
-const TourCard = ({ tour }) => {
+const TourCard = ({ tour, index = 0 }) => {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   if (!tour) {
     return (
-      <div className="tour-card">
-        <span className="coming-soon">В разработке</span>
+      <div className="tour-card tour-card-skeleton">
+        <div className="tour-image-skeleton"></div>
+        <div className="tour-content-skeleton">
+          <div className="skeleton-line skeleton-title"></div>
+          <div className="skeleton-line skeleton-location"></div>
+          <div className="skeleton-line skeleton-description"></div>
+        </div>
       </div>
     );
   }
 
-  const { name, description, points } = tour;
+  const { id, name, description, points } = tour;
 
-  // Берём первое изображение
-  const media = points?.[0]?.media?.[0];
-  const imageUrl = media?.url;
+  const imageUrl = points?.[0]?.media?.[0]?.url;
   const pointName = points?.[0]?.name || 'Локация не указана';
-  const pointDescription = points?.[0]?.description || '';
-
-  // Сбрасываем ошибку при смене тура
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
-  const handleImageLoad = () => {
-    setImageError(false);
-  };
+  const pointsCount = points?.length || 0;
 
   return (
-    <div className="tour-card">
-      <div className="tour-image">
-        {imageUrl && !imageError ? (
-          <img
-            src={imageUrl}
-            alt={name}
-            onLoad={handleImageLoad}
-            onError={handleImageError}
-            style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '12px' }}
-          />
-        ) : (
-          <img
-            src="/placeholder.jpg"
-            alt="Заглушка"
-            style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '12px' }}
-          />
-        )}
-      </div>
+    <Link to={`/tour/${id}`} className="tour-card-link">
+      <article className="tour-card" style={{ animationDelay: `${index * 0.1}s` }}>
+        <div className="tour-image-wrapper">
+          <div className="tour-image">
+            {imageUrl && !imageError ? (
+              <>
+                {!imageLoaded && <div className="image-placeholder"></div>}
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  onLoad={() => {
+                    setImageError(false);
+                    setImageLoaded(true);
+                  }}
+                  onError={() => setImageError(true)}
+                  className={imageLoaded ? 'loaded' : ''}
+                />
+              </>
+            ) : (
+              <div className="image-placeholder">
+                <span className="placeholder-icon">🗺️</span>
+              </div>
+            )}
+          </div>
+          <div className="tour-badge">
+            <span className="badge-icon">📍</span>
+            <span>{pointsCount} {pointsCount === 1 ? 'точка' : pointsCount < 5 ? 'точки' : 'точек'}</span>
+          </div>
+        </div>
 
-      <h3 className="tour-title">{name}</h3>
-      <p className="tour-location">{pointName}</p>
-      <p className="tour-description">
-        {description.length > 80 ? `${description.slice(0, 80)}...` : description}
-      </p>
-    </div>
+        <div className="tour-content">
+          <h3 className="tour-title">{name}</h3>
+          <p className="tour-location">
+            <span className="location-icon">📍</span>
+            {pointName}
+          </p>
+          <p className="tour-description">
+            {description && description.length > 100 
+              ? `${description.slice(0, 100)}...` 
+              : description || 'Описание отсутствует'}
+          </p>
+          <div className="tour-footer">
+            <span className="tour-link">
+              Подробнее
+              <span className="arrow">→</span>
+            </span>
+          </div>
+        </div>
+      </article>
+    </Link>
   );
 };
 

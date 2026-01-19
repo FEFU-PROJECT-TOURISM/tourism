@@ -1,6 +1,8 @@
 // src/components/CreatePointForm.jsx
 import React, { useState } from 'react';
-import { createPoint } from '../services/api'; // ← У нас уже есть эта функция!
+import { createPoint } from '../services/api';
+import MapComponent from '../components/MapComponent';
+import './CreatePointForm.css';
 
 const CreatePointForm = ({ onPointCreated }) => {
   const [name, setName] = useState('');
@@ -67,74 +69,155 @@ const CreatePointForm = ({ onPointCreated }) => {
 
   return (
     <div className="create-point-form">
-      <h3>Создать новую точку</h3>
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Название точки"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Описание"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="number"
-          step="any"
-          placeholder="Широта (latitude)"
-          value={latitude}
-          onChange={(e) => setLatitude(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          step="any"
-          placeholder="Долгота (longitude)"
-          value={longitude}
-          onChange={(e) => setLongitude(e.target.value)}
-          required
-        />
+      <div className="form-header">
+        <h3>Создать новую точку</h3>
+        <p className="form-subtitle">Добавьте новую точку интереса на карту</p>
+      </div>
 
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handlePhotoChange}
-          disabled={uploading}
-        />
+      <form onSubmit={handleSubmit} className="point-form">
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="point-name">
+              Название точки <span className="required">*</span>
+            </label>
+            <input
+              id="point-name"
+              type="text"
+              placeholder="Например: Красная площадь"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="point-description">Описание</label>
+            <textarea
+              id="point-description"
+              placeholder="Расскажите о точке..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="form-textarea"
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="point-latitude">
+              Широта <span className="required">*</span>
+            </label>
+            <input
+              id="point-latitude"
+              type="number"
+              step="any"
+              placeholder="55.7558"
+              value={latitude}
+              onChange={(e) => setLatitude(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="point-longitude">
+              Долгота <span className="required">*</span>
+            </label>
+            <input
+              id="point-longitude"
+              type="number"
+              step="any"
+              placeholder="37.6176"
+              value={longitude}
+              onChange={(e) => setLongitude(e.target.value)}
+              required
+              className="form-input"
+            />
+          </div>
+        </div>
+
+        <div className="point-map-picker">
+          <h4>Или выберите точку на карте</h4>
+          <p className="map-hint">Кликните на карте, чтобы установить координаты</p>
+          <MapComponent
+            points={
+              latitude && longitude
+                ? [{ id: 'preview', name: 'Выбранная точка', latitude: +latitude, longitude: +longitude }]
+                : []
+            }
+            onSelectLocation={({ latitude: lat, longitude: lng }) => {
+              setLatitude(lat.toFixed(6));
+              setLongitude(lng.toFixed(6));
+            }}
+            center={latitude && longitude ? [+latitude, +longitude] : [55.7558, 37.6176]}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="point-photos">
+            Фотографии <span className="required">*</span>
+          </label>
+          <div className="file-input-wrapper">
+            <input
+              id="point-photos"
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handlePhotoChange}
+              disabled={uploading}
+              className="file-input"
+            />
+            <label htmlFor="point-photos" className="file-label">
+              <span className="file-icon">📷</span>
+              <span>{photos.length > 0 ? `${photos.length} файлов выбрано` : 'Выберите фотографии'}</span>
+            </label>
+          </div>
+        </div>
 
         {/* Предпросмотр фото */}
         {previewUrls.length > 0 && (
           <div className="photo-preview">
-            {previewUrls.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Предпросмотр ${index + 1}`}
-                style={{
-                  width: '100px',
-                  height: '100px',
-                  objectFit: 'cover',
-                  margin: '4px',
-                  borderRadius: '8px',
-                }}
-              />
-            ))}
+            <h5>Предпросмотр ({previewUrls.length})</h5>
+            <div className="preview-grid">
+              {previewUrls.map((url, index) => (
+                <div key={index} className="preview-item">
+                  <img
+                    src={url}
+                    alt={`Предпросмотр ${index + 1}`}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Прогресс-бар */}
         {uploading && (
           <div className="upload-progress">
-            <div className="progress-bar" style={{ width: `${progress}%` }} />
-            <span>{Math.round(progress)}%</span>
+            <div className="progress-info">
+              <span>Загрузка...</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div className="progress-bar-wrapper">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
           </div>
         )}
 
-        <button type="submit" disabled={uploading}>
-          {uploading ? 'Загрузка...' : 'Создать точку'}
+        <button type="submit" disabled={uploading || !name || !latitude || !longitude || photos.length === 0} className="form-submit">
+          {uploading ? (
+            <>
+              <span className="spinner"></span>
+              Загрузка...
+            </>
+          ) : (
+            <>
+              <span>✅</span>
+              Создать точку
+            </>
+          )}
         </button>
       </form>
     </div>
