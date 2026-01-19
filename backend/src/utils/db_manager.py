@@ -3,6 +3,7 @@ from repository.point import PointRepository
 from repository.point_media import PointMediaRepository
 from repository.tour import TourRepository
 from repository.tour_point import TourPointRepository
+from repository.organization import OrganizationRepository, OrganizationPhoneRepository
 
 
 class DBManager:
@@ -18,6 +19,8 @@ class DBManager:
         self.point = PointRepository(self._async_session)
         self.media = MediaRepository(self._async_session)
         self.point_media = PointMediaRepository(self._async_session)
+        self.organization = OrganizationRepository(self._async_session)
+        self.organization_phone = OrganizationPhoneRepository(self._async_session)
         return self
 
 

@@ -16,9 +16,16 @@ class TourService(BaseService):
             return tour[0]
 
 
-    async def create_tour(self, tour: TourAddReq) -> Tour:
-        return await self.db.tour.create(TourAdd(
+    async def create_tour(self, tour: TourAddReq, org_id: int) -> Tour:
+        from pydantic import BaseModel
+        class TourAddWithOrg(BaseModel):
+            name: str
+            description: str
+            org_id: int
+        
+        return await self.db.tour.create(TourAddWithOrg(
             name=tour.name,
             description=tour.description,
+            org_id=org_id
             )
         )

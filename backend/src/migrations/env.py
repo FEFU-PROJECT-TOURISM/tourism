@@ -14,6 +14,7 @@ from database import Base
 from model.db.point import *
 from model.db.tour import *
 from model.db.media import *
+from model.db.organization import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
