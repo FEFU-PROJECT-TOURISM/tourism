@@ -8,23 +8,31 @@ import './CreateTourPage.css';
 
 const CreateTourPage = () => {
   const navigate = useNavigate();
-  const [selectedPointIds, setSelectedPointIds] = useState([]);
+  const [selectedPoints, setSelectedPoints] = useState([]); // Храним полные данные точек
   const [activeSection, setActiveSection] = useState('points');
 
-  const togglePoint = (id) => {
-    setSelectedPointIds(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    );
+  const togglePoint = (point) => {
+    setSelectedPoints(prev => {
+      const exists = prev.find(p => p.id === point.id);
+      if (exists) {
+        return prev.filter(p => p.id !== point.id);
+      } else {
+        return [...prev, point];
+      }
+    });
   };
 
   const handlePointCreated = (newPoint) => {
-    togglePoint(newPoint.id);
-    // Можно показать уведомление вместо alert
+    setSelectedPoints(prev => [...prev, newPoint]);
   };
 
   const handleTourCreated = () => {
-    setSelectedPointIds([]);
+    setSelectedPoints([]);
     navigate('/');
+  };
+
+  const handlePointsReorder = (reorderedPoints) => {
+    setSelectedPoints(reorderedPoints);
   };
 
   return (
@@ -61,7 +69,10 @@ const CreateTourPage = () => {
       <div className="page-content">
         {activeSection === 'points' && (
           <div className="content-section">
-            <PointSelector selectedIds={selectedPointIds} onToggle={togglePoint} />
+            <PointSelector 
+              selectedPoints={selectedPoints} 
+              onToggle={togglePoint} 
+            />
           </div>
         )}
 
@@ -74,7 +85,8 @@ const CreateTourPage = () => {
         {activeSection === 'tour' && (
           <div className="content-section">
             <TourForm
-              selectedPointIds={selectedPointIds}
+              selectedPoints={selectedPoints}
+              onPointsReorder={handlePointsReorder}
               onCreateSuccess={handleTourCreated}
             />
           </div>

@@ -20,7 +20,9 @@ class BaseRepository:
     async def create(self, data):
         stmt = insert(self.model).values(**data.model_dump()).returning(self.model)
         result = await self._session.execute(stmt)
-        return self.mapper.to_schema(result.scalars().one())
+        model_instance = result.scalars().one()
+        # Используем базовый маппер для создания, чтобы избежать проблем с lazy loading
+        return self.mapper.to_schema(model_instance)
 
 
     async def create_bulk(self, data: list[BaseModel]):

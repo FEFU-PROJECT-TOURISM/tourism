@@ -1,26 +1,31 @@
 // src/components/TourForm.jsx
 import React, { useState } from 'react';
 import { createTour } from '../services/api';
+import MapComponent from './MapComponent';
 import './TourForm.css';
 
-const TourForm = ({ selectedPointIds, onCreateSuccess }) => {
+const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || selectedPointIds.length === 0) {
+    if (!name || selectedPoints.length === 0) {
       alert('Введите название и выберите хотя бы одну точку');
       return;
     }
 
     setLoading(true);
     try {
+      // Формируем данные тура с порядком точек
       const tourData = {
         name,
         description,
-        tour_point_ids: selectedPointIds,
+        tour_points: selectedPoints.map((point, index) => ({
+          point_id: point.id,
+          order: index
+        }))
       };
       await createTour(tourData);
       onCreateSuccess();
@@ -31,11 +36,27 @@ const TourForm = ({ selectedPointIds, onCreateSuccess }) => {
     }
   };
 
+  const movePoint = (index, direction) => {
+    const newPoints = [...selectedPoints];
+    if (direction === 'up' && index > 0) {
+      [newPoints[index - 1], newPoints[index]] = [newPoints[index], newPoints[index - 1]];
+      onPointsReorder(newPoints);
+    } else if (direction === 'down' && index < newPoints.length - 1) {
+      [newPoints[index], newPoints[index + 1]] = [newPoints[index + 1], newPoints[index]];
+      onPointsReorder(newPoints);
+    }
+  };
+
+  const removePoint = (index) => {
+    const newPoints = selectedPoints.filter((_, i) => i !== index);
+    onPointsReorder(newPoints);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="tour-form">
       <div className="form-header">
         <h3>Настройки тура</h3>
-        <p className="form-subtitle">Заполните информацию о вашем туре</p>
+        <p className="form-subtitle">Заполните информацию о вашем туре и установите порядок точек</p>
       </div>
 
       <div className="form-group">
@@ -65,15 +86,79 @@ const TourForm = ({ selectedPointIds, onCreateSuccess }) => {
         />
       </div>
 
+      {selectedPoints.length > 0 && (
+        <>
+          <div className="form-group">
+            <label>Порядок точек маршрута</label>
+            <p className="form-hint">Измените порядок точек, чтобы задать маршрут тура</p>
+            <div className="points-order-list">
+              {selectedPoints.map((point, index) => (
+                <div key={point.id} className="order-item">
+                  <div className="order-number">{index + 1}</div>
+                  <div className="order-content">
+                    <div className="order-point-name">{point.name}</div>
+                    <div className="order-point-desc">
+                      {point.description || 'Без описания'}
+                    </div>
+                  </div>
+                  <div className="order-actions">
+                    <button
+                      type="button"
+                      onClick={() => movePoint(index, 'up')}
+                      disabled={index === 0}
+                      className="order-btn"
+                      title="Переместить вверх"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => movePoint(index, 'down')}
+                      disabled={index === selectedPoints.length - 1}
+                      className="order-btn"
+                      title="Переместить вниз"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removePoint(index)}
+                      className="order-btn remove-btn"
+                      title="Удалить из маршрута"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Предпросмотр маршрута</label>
+            <div className="map-preview">
+              <MapComponent
+                points={selectedPoints}
+                showRoute={true}
+                center={selectedPoints.length > 0 
+                  ? [selectedPoints[0].latitude, selectedPoints[0].longitude]
+                  : [43.1155, 131.8855]}
+                zoom={12}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="form-info">
         <div className="info-card">
           <span className="info-icon">📍</span>
           <div>
             <div className="info-label">Выбрано точек</div>
-            <div className="info-value">{selectedPointIds.length}</div>
+            <div className="info-value">{selectedPoints.length}</div>
           </div>
         </div>
-        {selectedPointIds.length === 0 && (
+        {selectedPoints.length === 0 && (
           <p className="form-warning">
             ⚠️ Выберите хотя бы одну точку для создания тура
           </p>
@@ -82,7 +167,7 @@ const TourForm = ({ selectedPointIds, onCreateSuccess }) => {
 
       <button 
         type="submit" 
-        disabled={loading || selectedPointIds.length === 0}
+        disabled={loading || selectedPoints.length === 0}
         className="form-submit"
       >
         {loading ? (

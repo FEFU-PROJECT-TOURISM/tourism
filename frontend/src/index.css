@@ -57,6 +57,16 @@
   box-sizing: border-box;
 }
 
+/* Яндекс карты стили */
+[class*="ymaps3"] {
+  font-family: inherit;
+}
+
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
