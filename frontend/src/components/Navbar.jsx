@@ -1,18 +1,38 @@
 // src/components/Navbar.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
+  const location = useLocation();
+
   return (
     <nav className="navbar">
-      <div className="nav-brand">
-        <Link to="/">Туристические экскурсии</Link>
+      <div className="navbar-container">
+        <Link to="/" className="nav-brand">
+          <span className="brand-icon">🗺️</span>
+          <span className="brand-text">Туристические экскурсии</span>
+        </Link>
+        <ul className="nav-links">
+          <li>
+            <Link 
+              to="/" 
+              className={location.pathname === '/' ? 'active' : ''}
+            >
+              Главная
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/create-tour" 
+              className={location.pathname === '/create-tour' ? 'active' : ''}
+            >
+              <span className="nav-icon">➕</span>
+              Создать тур
+            </Link>
+          </li>
+        </ul>
       </div>
-      <ul className="nav-links">
-        <li><Link to="/">Главная</Link></li>
-        <li><Link to="/create-tour">Создать тур</Link></li>
-      </ul>
     </nav>
   );
 };

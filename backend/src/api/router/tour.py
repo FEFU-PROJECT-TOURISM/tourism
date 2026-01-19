@@ -23,3 +23,12 @@ async def create_tour(
     return await TourView(db=db).create_tour(
         tour=tour
     )
+
+
+
+@router.get("/{tour_id}")
+async def get_tour(
+    db: db_dep,
+    tour_id: int,
+):
+    return await TourView(db=db).get_tour(tour_id=tour_id)

@@ -11,7 +11,14 @@ class TourRepository(BaseRepository):
     model = TourOrm
     mapper = TourMapper
 
-    async def get_with_rel(self):
-        stmt = select(self.model).options(selectinload(self.model.points).selectinload(PointOrm.media))
+    async def get_with_rel(self, *filter, **filter_by):
+        stmt =(
+            select(self.model)
+            .filter(*filter)
+            .filter_by(**filter_by)
+            .options(selectinload(self.model.points)
+                     .selectinload(PointOrm.media)
+                    )
+            )
         result = await self._session.execute(stmt)
         return result.scalars().all()

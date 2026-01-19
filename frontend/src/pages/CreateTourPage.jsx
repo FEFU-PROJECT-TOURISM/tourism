@@ -1,12 +1,15 @@
 // src/pages/CreateTourPage.jsx
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PointSelector from '../components/PointSelector';
 import CreatePointForm from '../components/CreatePointForm';
 import TourForm from '../components/TourForm';
 import './CreateTourPage.css';
 
 const CreateTourPage = () => {
+  const navigate = useNavigate();
   const [selectedPointIds, setSelectedPointIds] = useState([]);
+  const [activeSection, setActiveSection] = useState('points');
 
   const togglePoint = (id) => {
     setSelectedPointIds(prev =>
@@ -15,29 +18,68 @@ const CreateTourPage = () => {
   };
 
   const handlePointCreated = (newPoint) => {
-    // Добавляем новую точку в выбранные
     togglePoint(newPoint.id);
-    alert(`Точка "${newPoint.name}" создана и добавлена в тур`);
+    // Можно показать уведомление вместо alert
   };
 
   const handleTourCreated = () => {
     setSelectedPointIds([]);
-    alert('Переход к списку туров...');
-    // Можно: navigate('/tours') если используете router
+    navigate('/');
   };
 
   return (
     <div className="create-tour-page">
-      <h1>Создание нового тура</h1>
+      <div className="page-header">
+        <h1>Создание нового тура</h1>
+        <p>Создайте уникальный маршрут, выбрав точки интереса или добавив новые</p>
+      </div>
 
-      <PointSelector selectedIds={selectedPointIds} onToggle={togglePoint} />
+      <div className="page-tabs">
+        <button
+          className={`tab ${activeSection === 'points' ? 'active' : ''}`}
+          onClick={() => setActiveSection('points')}
+        >
+          <span className="tab-icon">📍</span>
+          Выбрать точки
+        </button>
+        <button
+          className={`tab ${activeSection === 'create' ? 'active' : ''}`}
+          onClick={() => setActiveSection('create')}
+        >
+          <span className="tab-icon">➕</span>
+          Создать точку
+        </button>
+        <button
+          className={`tab ${activeSection === 'tour' ? 'active' : ''}`}
+          onClick={() => setActiveSection('tour')}
+        >
+          <span className="tab-icon">🗺️</span>
+          Настройки тура
+        </button>
+      </div>
 
-      <CreatePointForm onPointCreated={handlePointCreated} />
+      <div className="page-content">
+        {activeSection === 'points' && (
+          <div className="content-section">
+            <PointSelector selectedIds={selectedPointIds} onToggle={togglePoint} />
+          </div>
+        )}
 
-      <TourForm
-        selectedPointIds={selectedPointIds}
-        onCreateSuccess={handleTourCreated}
-      />
+        {activeSection === 'create' && (
+          <div className="content-section">
+            <CreatePointForm onPointCreated={handlePointCreated} />
+          </div>
+        )}
+
+        {activeSection === 'tour' && (
+          <div className="content-section">
+            <TourForm
+              selectedPointIds={selectedPointIds}
+              onCreateSuccess={handleTourCreated}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

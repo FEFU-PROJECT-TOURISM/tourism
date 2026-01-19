@@ -54,3 +54,13 @@ export const createTour = async (tourData) => {
     throw error;
   }
 };
+
+export const getTourById = async (tourId) => {
+  try {
+    const response = await api.get(`/tour/${tourId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка загрузки тура ${tourId}:`, error);
+    throw error;
+  }
+};
