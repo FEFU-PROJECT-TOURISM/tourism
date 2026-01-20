@@ -4,7 +4,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getOrganization, getOrganizationTours, updateOrganization, deleteTour, updateTour } from '../services/api';
 import { getOrganization as getCurrentOrg, isAuthenticated } from '../services/auth';
 import OrganizationTourCard from '../components/OrganizationTourCard';
-import ErrorNotification from '../components/ErrorNotification';
+import StatusMessage from '../components/StatusMessage';
 import './OrganizationPage.css';
 
 const OrganizationPage = () => {
@@ -14,6 +14,9 @@ const OrganizationPage = () => {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [tourError, setTourError] = useState(null);
+  const [tourSuccess, setTourSuccess] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
@@ -83,7 +86,10 @@ const OrganizationPage = () => {
       
       setOrganization(updatedOrg);
       setIsEditing(false);
-      alert('Информация об организации обновлена');
+      setSuccess({ message: 'Информация об организации успешно обновлена' });
+      setError(null);
+      setTourError(null);
+      setTourSuccess(null);
     } catch (err) {
       console.error('Ошибка обновления организации:', err);
       setError({
@@ -91,6 +97,9 @@ const OrganizationPage = () => {
         statusCode: err.statusCode || err.response?.status,
         details: err.details || err.response?.data || null,
       });
+      setSuccess(null);
+      setTourError(null);
+      setTourSuccess(null);
     } finally {
       setSaving(false);
     }
@@ -104,14 +113,20 @@ const OrganizationPage = () => {
     try {
       await deleteTour(tourId);
       setTours(prev => prev.filter(t => t.id !== tourId));
-      alert('Тур успешно удален');
+      setTourSuccess({ message: 'Тур успешно удален' });
+      setTourError(null);
+      setError(null);
+      setSuccess(null);
     } catch (err) {
       console.error('Ошибка удаления тура:', err);
-      setError({
+      setTourError({
         message: err.message || 'Ошибка удаления тура',
         statusCode: err.statusCode || err.response?.status,
         details: err.details || err.response?.data || null,
       });
+      setTourSuccess(null);
+      setError(null);
+      setSuccess(null);
     }
   };
 
@@ -134,14 +149,20 @@ const OrganizationPage = () => {
       await updateTour(editingTourId, editTourForm);
       await loadData(); // Перезагружаем данные
       setEditingTourId(null);
-      alert('Тур успешно обновлен');
+      setTourSuccess({ message: 'Тур успешно обновлен' });
+      setTourError(null);
+      setError(null);
+      setSuccess(null);
     } catch (err) {
       console.error('Ошибка обновления тура:', err);
-      setError({
+      setTourError({
         message: err.message || 'Ошибка обновления тура',
         statusCode: err.statusCode || err.response?.status,
         details: err.details || err.response?.data || null,
       });
+      setTourSuccess(null);
+      setError(null);
+      setSuccess(null);
     } finally {
       setSaving(false);
     }
@@ -200,8 +221,6 @@ const OrganizationPage = () => {
 
   return (
     <div className="organization-page">
-      <ErrorNotification error={error} onClose={() => setError(null)} />
-
       <div className="org-header">
         <div className="org-header-content">
           <h1 className="org-name">{organization.name}</h1>
@@ -275,7 +294,22 @@ const OrganizationPage = () => {
                 + Добавить телефон
               </button>
             </div>
-
+            {error && (
+              <StatusMessage 
+                message={error.message} 
+                type="error" 
+                statusCode={error.statusCode}
+                details={error.details}
+                onClose={() => setError(null)}
+              />
+            )}
+            {success && (
+              <StatusMessage 
+                message={success.message} 
+                type="success"
+                onClose={() => setSuccess(null)}
+              />
+            )}
             <div className="form-actions">
               <button
                 type="submit"
@@ -345,7 +379,20 @@ const OrganizationPage = () => {
               )}
             </div>
           ) : (
-            <div className="tours-grid">
+            <div className="tours-section">
+              {(tourError || tourSuccess) && !editingTourId && (
+                <StatusMessage 
+                  message={tourError?.message || tourSuccess?.message} 
+                  type={tourError ? "error" : "success"}
+                  statusCode={tourError?.statusCode}
+                  details={tourError?.details}
+                  onClose={() => {
+                    setTourError(null);
+                    setTourSuccess(null);
+                  }}
+                />
+              )}
+              <div className="tours-grid">
               {tours.map((tour, index) => (
                 <div key={tour.id} className="tour-item-wrapper">
                   {editingTourId === tour.id ? (
@@ -373,6 +420,22 @@ const OrganizationPage = () => {
                           className="form-textarea"
                         />
                       </div>
+                      {tourError && (
+                        <StatusMessage 
+                          message={tourError.message} 
+                          type="error" 
+                          statusCode={tourError.statusCode}
+                          details={tourError.details}
+                          onClose={() => setTourError(null)}
+                        />
+                      )}
+                      {tourSuccess && (
+                        <StatusMessage 
+                          message={tourSuccess.message} 
+                          type="success"
+                          onClose={() => setTourSuccess(null)}
+                        />
+                      )}
                       <div className="form-actions">
                         <button
                           type="submit"
@@ -413,6 +476,7 @@ const OrganizationPage = () => {
                   )}
                 </div>
               ))}
+              </div>
             </div>
           )}
         </div>

@@ -27,10 +27,9 @@ class PointView(BaseView):
         
         # Создаем связи с медиа только если они есть
         if media_db:
-            point_medias = await PointMediaService(db=self._db).create_point_media(point, media_db)
-        else:
-            point_medias = []
+            await PointMediaService(db=self._db).create_point_media(point, media_db)
         
         await self._db.commit()
-        return PointWithMedia(**point.model_dump(), media=point_medias)
+        # Возвращаем media_db (список Media), а не point_medias (список PointMedia)
+        return PointWithMedia(**point.model_dump(), media=media_db)
 

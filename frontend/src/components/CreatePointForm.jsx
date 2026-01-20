@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { createPoint } from '../services/api';
 import MapComponent from '../components/MapComponent';
-import ErrorNotification from './ErrorNotification';
+import StatusMessage from './StatusMessage';
 import './CreatePointForm.css';
 
 const CreatePointForm = ({ onPointCreated }) => {
@@ -15,6 +15,7 @@ const CreatePointForm = ({ onPointCreated }) => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   // Предпросмотр фото
   const handlePhotoChange = (e) => {
@@ -25,7 +26,7 @@ const CreatePointForm = ({ onPointCreated }) => {
     const invalidFiles = files.filter(file => file.size > maxSize);
     
     if (invalidFiles.length > 0) {
-      alert(`Некоторые файлы слишком большие (максимум 10 МБ на файл). Пропущено файлов: ${invalidFiles.length}`);
+      setError({ message: `Некоторые файлы слишком большие (максимум 10 МБ на файл). Пропущено файлов: ${invalidFiles.length}` });
       const validFiles = files.filter(file => file.size <= maxSize);
       setPhotos(validFiles);
       
@@ -47,12 +48,14 @@ const CreatePointForm = ({ onPointCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !latitude || !longitude) {
-      alert('Заполните обязательные поля: название, широта и долгота');
+      setError({ message: 'Заполните обязательные поля: название, широта и долгота' });
       return;
     }
 
     setUploading(true);
     setProgress(0);
+    setError(null);
+    setSuccess(null);
 
     let interval = null;
 
@@ -73,7 +76,7 @@ const CreatePointForm = ({ onPointCreated }) => {
 
       // Успешно
       onPointCreated(newPoint);
-      alert('Точка создана!');
+      setSuccess({ message: 'Точка успешно создана!' });
 
       // Сброс формы
       setName('');
@@ -104,8 +107,6 @@ const CreatePointForm = ({ onPointCreated }) => {
 
   return (
     <div className="create-point-form">
-      <ErrorNotification error={error} onClose={() => setError(null)} />
-      
       <div className="form-header">
         <h3>Создать новую точку</h3>
         <p className="form-subtitle">Добавьте новую точку интереса на карту</p>
@@ -242,6 +243,23 @@ const CreatePointForm = ({ onPointCreated }) => {
               <div className="progress-bar" style={{ width: `${progress}%` }} />
             </div>
           </div>
+        )}
+
+        {error && (
+          <StatusMessage 
+            message={error.message} 
+            type="error" 
+            statusCode={error.statusCode}
+            details={error.details}
+            onClose={() => setError(null)}
+          />
+        )}
+        {success && (
+          <StatusMessage 
+            message={success.message} 
+            type="success"
+            onClose={() => setSuccess(null)}
+          />
         )}
 
         <button type="submit" disabled={uploading || !name || !latitude || !longitude} className="form-submit">

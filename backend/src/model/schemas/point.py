@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 from model.schemas.base import Name, Description, Id
-from model.schemas.point_media import PointMedia
+from model.schemas.media import Media
 
 
 class PointAdd(Name, Description):
@@ -14,4 +14,4 @@ class Point(Id, PointAdd):
 
 
 class PointWithMedia(Point):
-    media: list[PointMedia]
+    media: list[Media]
