@@ -109,6 +109,11 @@ h3 {
   font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
+/* Исключение для заголовков в карточках туров - уменьшаем размер */
+.tour-card h3.tour-title {
+  font-size: 1.125rem !important;
+}
+
 h4 {
   font-size: clamp(1.25rem, 2.5vw, 1.5rem);
 }
@@ -178,4 +183,17 @@ input:focus, textarea:focus, select:focus {
 ::selection {
   background: var(--primary-light);
   color: white;
+}
+
+/* Mobile Map Container */
+@media (max-width: 768px) {
+  .map-container {
+    height: 300px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-container {
+    height: 250px !important;
+  }
 }

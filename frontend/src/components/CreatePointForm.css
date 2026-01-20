@@ -245,11 +245,48 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .create-point-form {
+    gap: var(--spacing-lg);
+  }
+
+  .form-header h3 {
+    font-size: 1.5rem;
+  }
+
   .form-row {
     grid-template-columns: 1fr;
   }
 
+  .point-map-picker {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
+  }
+
+  .point-map-picker > div:last-child {
+    height: 300px;
+  }
+
   .preview-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  .form-submit {
+    font-size: 1rem;
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .point-map-picker > div:last-child {
+    height: 250px;
+  }
+
+  .preview-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

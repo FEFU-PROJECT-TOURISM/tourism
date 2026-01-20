@@ -5,7 +5,7 @@ import { getToken } from './auth';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // Увеличено до 30 секунд для загрузки больших файлов
 });
 
 // Добавляем токен к каждому запросу
@@ -59,18 +59,35 @@ export const getPoints = async () => {
 };
 
 export const createPoint = async (pointData, photos) => {
-  const formData = new FormData();
-  formData.append('point_add', JSON.stringify(pointData));
-  photos.forEach(photo => {
-    formData.append('photos', photo);
-  });
+  try {
+    const formData = new FormData();
+    formData.append('point_add', JSON.stringify(pointData));
+    photos.forEach(photo => {
+      formData.append('photos', photo);
+    });
 
-  const response = await api.post('/point', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
+    const response = await api.post('/point', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      timeout: 60000, // 60 секунд для загрузки файлов
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка создания точки:', error);
+    if (error.response) {
+      // Сервер ответил с ошибкой
+      throw new Error(error.response.data?.detail || error.response.data?.message || 'Ошибка создания точки');
+    } else if (error.request) {
+      // Запрос был отправлен, но ответа не получено (таймаут, сеть)
+      throw new Error('Превышено время ожидания. Проверьте подключение к интернету и размер файлов.');
+    } else {
+      // Ошибка при настройке запроса
+      throw new Error(error.message || 'Ошибка создания точки');
+    }
+  }
 };
 
 // === Туры ===

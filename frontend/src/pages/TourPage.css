@@ -77,19 +77,19 @@
 }
 
 .tour-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 800;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
   margin-bottom: var(--spacing-md);
-  line-height: 1.2;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.tour-description {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.7;
-  margin-bottom: var(--spacing-lg);
-  opacity: 0.95;
-  max-width: 800px;
+  line-height: 1.3;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(10px);
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
 }
 
 .tour-stats {
@@ -121,11 +121,29 @@
   padding: 0 var(--spacing-xl) var(--spacing-2xl);
 }
 
+.tour-description-section,
 .tour-organization-section,
 .tour-map-section,
 .tour-points-section {
   margin-bottom: var(--spacing-2xl);
   animation: fadeIn 0.6s ease-out;
+}
+
+.description-content {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+.description-content p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .organization-card {
@@ -303,19 +321,95 @@
 /* Responsive */
 @media (max-width: 768px) {
   .tour-hero {
-    min-height: 400px;
+    min-height: 350px;
   }
 
   .tour-hero-content {
     padding: var(--spacing-xl) var(--spacing-md);
   }
 
+  .tour-title {
+    font-size: clamp(1.5rem, 5vw, 2rem) !important;
+    padding: var(--spacing-sm) var(--spacing-md) !important;
+  }
+
+  .tour-stats {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+  }
+
+  .stat-item {
+    width: 100%;
+    justify-content: center;
+  }
+
   .tour-content {
     padding: 0 var(--spacing-md) var(--spacing-xl);
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .section-header p {
+    font-size: 1rem;
+  }
+
+  .map-wrapper {
+    padding: var(--spacing-sm);
   }
 
   .tour-points-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
+  }
+
+  .organization-card {
+    padding: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  .tour-hero {
+    min-height: 300px;
+  }
+
+  .tour-hero-content {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .back-link {
+    font-size: 0.875rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .tour-title {
+    font-size: 1.5rem !important;
+    padding: var(--spacing-xs) var(--spacing-sm) !important;
+  }
+
+  .tour-content {
+    padding: 0 var(--spacing-sm) var(--spacing-lg);
+  }
+
+  .description-content {
+    padding: var(--spacing-md);
+  }
+
+  .description-content p {
+    font-size: 1rem;
+  }
+
+  .organization-card {
+    padding: var(--spacing-md);
+  }
+
+  .org-info h3 {
+    font-size: 1.25rem;
   }
 }

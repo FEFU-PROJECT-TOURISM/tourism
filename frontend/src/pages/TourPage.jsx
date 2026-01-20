@@ -71,44 +71,23 @@ const TourPage = () => {
             Назад к турам
           </Link>
           <h1 className="tour-title">{tour.name}</h1>
-          {tour.description && (
-            <p className="tour-description">{tour.description}</p>
-          )}
           <div className="tour-stats">
             <div className="stat-item">
               <span className="stat-icon">📍</span>
               <span>{pointsCount} {pointsCount === 1 ? 'точка' : pointsCount < 5 ? 'точки' : 'точек'}</span>
             </div>
-            {tour.organization && (
-              <div className="stat-item">
-                <span className="stat-icon">🏢</span>
-                <span>{tour.organization.name}</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       <div className="tour-content">
-        {tour.organization && (
-          <div className="tour-organization-section">
+        {tour.description && (
+          <div className="tour-description-section">
             <div className="section-header">
-              <h2>Организация</h2>
-              <p>Информация об организации, создавшей этот тур</p>
+              <h2>Описание тура</h2>
             </div>
-            <div className="organization-card">
-              <div className="org-info">
-                <h3>{tour.organization.name}</h3>
-                <p className="org-email">{tour.organization.email}</p>
-                {tour.organization.phones && tour.organization.phones.length > 0 && (
-                  <div className="org-phones">
-                    <span className="phones-label">Телефоны:</span>
-                    {tour.organization.phones.map((phone, idx) => (
-                      <span key={idx} className="phone-item">+{phone.phone}</span>
-                    ))}
-                  </div>
-                )}
-              </div>
+            <div className="description-content">
+              <p>{tour.description}</p>
             </div>
           </div>
         )}
@@ -158,6 +137,29 @@ const TourPage = () => {
             </div>
           )}
         </div>
+
+        {tour.organization && (
+          <div className="tour-organization-section">
+            <div className="section-header">
+              <h2>Организация</h2>
+              <p>Информация об организации, создавшей этот тур</p>
+            </div>
+            <div className="organization-card">
+              <div className="org-info">
+                <h3>{tour.organization.name}</h3>
+                <p className="org-email">{tour.organization.email}</p>
+                {tour.organization.phones && tour.organization.phones.length > 0 && (
+                  <div className="org-phones">
+                    <span className="phones-label">Телефоны:</span>
+                    {tour.organization.phones.map((phone, idx) => (
+                      <span key={idx} className="phone-item">+{phone.phone}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

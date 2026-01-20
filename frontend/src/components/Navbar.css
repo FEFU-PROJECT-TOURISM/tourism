@@ -132,23 +132,132 @@
   border-color: var(--primary);
 }
 
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  z-index: 1001;
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 24px;
+  height: 18px;
+  position: relative;
+}
+
+.hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .navbar-container {
     padding: var(--spacing-md);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    position: relative;
   }
 
   .brand-text {
     font-size: 1.2rem;
   }
 
+  .mobile-menu-toggle {
+    display: block;
+    order: 2;
+  }
+
   .nav-links {
-    gap: var(--spacing-sm);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    flex-direction: column;
+    gap: 0;
+    padding: var(--spacing-md) 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--border);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .nav-links.mobile-open {
+    max-height: 500px;
+    opacity: 1;
+  }
+
+  .nav-links li {
+    width: 100%;
   }
 
   .nav-links a {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.9rem;
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: 1rem;
+    width: 100%;
+    display: flex;
+    border-radius: 0;
+  }
+
+  .nav-links a.active::after {
+    display: none;
+  }
+
+  .nav-org-info {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-primary);
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid var(--border);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+  }
+
+  .nav-org-info.mobile-open {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: var(--spacing-md);
+  }
+
+  .org-name {
+    width: 100%;
+    text-align: center;
+  }
+
+  .logout-btn {
+    width: 100%;
   }
 }

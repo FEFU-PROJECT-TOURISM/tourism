@@ -157,6 +157,51 @@
   min-width: 0;
 }
 
+/* Responsive */
+@media (max-width: 768px) {
+  .tour-form {
+    gap: var(--spacing-md);
+  }
+
+  .form-section {
+    padding: var(--spacing-lg);
+  }
+
+  .form-section h3 {
+    font-size: 1.25rem;
+  }
+
+  .points-list {
+    gap: var(--spacing-md);
+  }
+
+  .point-item {
+    padding: var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: var(--spacing-md);
+  }
+
+  .form-section h3 {
+    font-size: 1.125rem;
+  }
+
+  .point-item {
+    padding: var(--spacing-sm);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .point-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 .order-point-name {
   font-weight: 600;
   color: var(--text-primary);
@@ -217,6 +262,18 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   border: 2px solid var(--border);
+}
+
+@media (max-width: 768px) {
+  .map-preview {
+    height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-preview {
+    height: 250px;
+  }
 }
 
 .form-submit {

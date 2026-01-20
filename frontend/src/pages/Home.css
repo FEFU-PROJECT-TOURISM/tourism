@@ -243,14 +243,20 @@
     min-height: 500px;
   }
 
+  .hero-content {
+    max-width: 100%;
+  }
+
   .hero-actions {
     flex-direction: column;
     width: 100%;
+    gap: var(--spacing-sm);
   }
 
   .btn {
     width: 100%;
     justify-content: center;
+    padding: var(--spacing-md);
   }
 
   .tours-section {
@@ -260,15 +266,48 @@
   .tours-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
+    padding: 0;
+  }
+
+  .section-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .section-title {
+    font-size: 1.75rem;
   }
 }
 
 @media (max-width: 480px) {
+  .hero-section {
+    padding: var(--spacing-lg) var(--spacing-sm);
+    min-height: 400px;
+  }
+
   .hero-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    margin-bottom: var(--spacing-md);
   }
 
   .hero-description {
+    font-size: 0.95rem;
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .tours-section {
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-subtitle {
     font-size: 1rem;
   }
 }

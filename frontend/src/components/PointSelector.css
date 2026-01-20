@@ -218,7 +218,59 @@
 }
 
 /* Responsive */
+/* Responsive */
 @media (max-width: 768px) {
+  .point-selector {
+    padding: var(--spacing-md);
+  }
+
+  .selector-header h3 {
+    font-size: 1.25rem;
+  }
+
+  .points-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .point-card {
+    padding: var(--spacing-md);
+  }
+
+  .point-card h4 {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .point-selector {
+    padding: var(--spacing-sm);
+  }
+
+  .selector-header h3 {
+    font-size: 1.125rem;
+  }
+
+  .points-grid {
+    gap: var(--spacing-sm);
+  }
+
+  .point-card {
+    padding: var(--spacing-sm);
+  }
+
+  .point-card h4 {
+    font-size: 0.95rem;
+  }
+
+  .point-actions {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .point-actions button {
+    width: 100%;
+  }
   .points-grid {
     grid-template-columns: 1fr;
   }

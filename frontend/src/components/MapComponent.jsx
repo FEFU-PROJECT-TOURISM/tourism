@@ -166,6 +166,7 @@ const MapComponent = ({
   return (
     <div
       ref={mapRef}
+      className="map-container"
       style={{
         width: '100%',
         height: '400px',
