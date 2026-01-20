@@ -13,10 +13,20 @@ const TourPage = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    // Скроллим к началу страницы при переходе на страницу тура
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [tourId]);
+
+  useEffect(() => {
     const loadTour = async () => {
       try {
         const data = await getTourById(tourId);
         setTour(data);
+        // После загрузки данных также убеждаемся, что мы в начале страницы
+        // Используем небольшой таймаут, чтобы дать время на рендеринг
+        setTimeout(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        }, 100);
       } catch (err) {
         setError(true);
       } finally {
