@@ -87,9 +87,11 @@
   padding: var(--spacing-md) var(--spacing-lg);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(10px);
-  display: inline-block;
-  max-width: 100%;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .tour-stats {
@@ -154,16 +156,33 @@
   border: 1px solid var(--border);
 }
 
+.org-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition-base);
+}
+
+.org-link:hover h3 {
+  color: var(--primary);
+}
+
 .org-info h3 {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
+  transition: color var(--transition-base);
 }
 
 .org-email {
   color: var(--text-secondary);
   font-size: 1rem;
+  margin-bottom: var(--spacing-md);
+}
+
+.org-address {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
   margin-bottom: var(--spacing-md);
 }
 

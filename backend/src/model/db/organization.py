@@ -11,6 +11,7 @@ class OrganizationOrm(Base, Id):
     name: Mapped[str] = mapped_column(String(255))
     email: Mapped[str] = mapped_column(String(255), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
+    address: Mapped[str | None] = mapped_column(String(500), nullable=True)
 
     phones: Mapped[list["OrganizationPhoneOrm"]] = relationship(
         back_populates="organization",

@@ -1,21 +1,21 @@
-// src/components/TourCard.jsx
+// src/components/OrganizationTourCard.jsx
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './TourCard.css';
+import './OrganizationTourCard.css';
 
 // Константы для обрезки текста
 const MAX_TITLE_LENGTH = 40;
 const MAX_DESCRIPTION_LENGTH = 120;
 
-const TourCard = ({ tour, index = 0 }) => {
+const OrganizationTourCard = ({ tour, index = 0 }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   if (!tour) {
     return (
-      <div className="tour-card tour-card-skeleton">
-        <div className="tour-image-skeleton"></div>
-        <div className="tour-content-skeleton">
+      <div className="org-tour-card org-tour-card-skeleton">
+        <div className="org-tour-image-skeleton"></div>
+        <div className="org-tour-content-skeleton">
           <div className="skeleton-line skeleton-title"></div>
           <div className="skeleton-line skeleton-location"></div>
           <div className="skeleton-line skeleton-description"></div>
@@ -41,13 +41,13 @@ const TourCard = ({ tour, index = 0 }) => {
     : description;
 
   return (
-    <Link to={`/tour/${id}`} className="tour-card-link">
-      <article className="tour-card" style={{ animationDelay: `${index * 0.1}s` }}>
-        <div className="tour-image-wrapper">
-          <div className="tour-image">
+    <Link to={`/tour/${id}`} className="org-tour-card-link">
+      <article className="org-tour-card" style={{ animationDelay: `${index * 0.1}s` }}>
+        <div className="org-tour-image-wrapper">
+          <div className="org-tour-image">
             {imageUrl && !imageError ? (
               <>
-                {!imageLoaded && <div className="image-placeholder"></div>}
+                {!imageLoaded && <div className="org-image-placeholder"></div>}
                 <img
                   src={imageUrl}
                   alt={name}
@@ -60,32 +60,32 @@ const TourCard = ({ tour, index = 0 }) => {
                 />
               </>
             ) : (
-              <div className="image-placeholder">
-                <span className="placeholder-icon">🗺️</span>
+              <div className="org-image-placeholder">
+                <span className="org-placeholder-icon">🗺️</span>
               </div>
             )}
           </div>
-          <div className="tour-badge">
-            <span className="badge-icon">📍</span>
+          <div className="org-tour-badge">
+            <span className="org-badge-icon">📍</span>
             <span>{pointsCount} {pointsCount === 1 ? 'точка' : pointsCount < 5 ? 'точки' : 'точек'}</span>
           </div>
         </div>
 
-        <div className="tour-content">
-          <h3 className="tour-title" title={name}>
+        <div className="org-tour-content">
+          <h3 className="org-tour-title" title={name}>
             {truncatedName}
           </h3>
-          <p className="tour-location">
-            <span className="location-icon">📍</span>
+          <p className="org-tour-location">
+            <span className="org-location-icon">📍</span>
             {pointName}
           </p>
-          <p className="tour-description">
+          <p className="org-tour-description">
             {truncatedDescription || 'Описание отсутствует'}
           </p>
-          <div className="tour-footer">
-            <span className="tour-link">
+          <div className="org-tour-footer">
+            <span className="org-tour-link">
               Подробнее
-              <span className="arrow">→</span>
+              <span className="org-arrow">→</span>
             </span>
           </div>
         </div>
@@ -94,4 +94,4 @@ const TourCard = ({ tour, index = 0 }) => {
   );
 };
 
-export default TourCard;
+export default OrganizationTourCard;

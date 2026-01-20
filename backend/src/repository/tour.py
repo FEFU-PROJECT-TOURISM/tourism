@@ -13,6 +13,7 @@ class TourRepository(BaseRepository):
     mapper = TourMapper
 
     async def get_with_rel(self, *filter, **filter_by):
+        # Если передан org_id, добавляем фильтр по организации
         stmt = (
             select(self.model)
             .filter(*filter)

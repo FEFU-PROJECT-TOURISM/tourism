@@ -69,6 +69,9 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body {
@@ -82,6 +85,8 @@ body {
   background: var(--bg-secondary);
   color: var(--text-primary);
   line-height: 1.6;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 #root {
@@ -109,9 +114,15 @@ h3 {
   font-size: clamp(1.5rem, 3vw, 2rem);
 }
 
-/* Исключение для заголовков в карточках туров - уменьшаем размер */
-.tour-card h3.tour-title {
-  font-size: 1.125rem !important;
+/* Исключение для заголовков в карточках туров */
+.tour-card .tour-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 h4 {
@@ -132,6 +143,15 @@ a {
 
 a:hover {
   color: var(--primary-dark);
+}
+
+/* Исключение для имени организации в навбаре */
+.nav-org-info .org-name {
+  color: #000000 !important;
+}
+
+.nav-org-info .org-name:hover {
+  color: var(--primary) !important;
 }
 
 /* Buttons */

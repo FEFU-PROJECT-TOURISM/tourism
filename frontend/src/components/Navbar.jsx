@@ -4,6 +4,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, getOrganization, logout } from '../services/auth';
 import './Navbar.css';
 
+// Константа для обрезки названия организации
+const MAX_ORG_NAME_LENGTH = 25;
+
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -63,6 +66,28 @@ const Navbar = () => {
                   Создать тур
                 </Link>
               </li>
+              {organization && (
+                <>
+                  <li className="mobile-org-link">
+                    <Link 
+                      to={`/organization/${organization.id}`}
+                      className={location.pathname === `/organization/${organization.id}` ? 'active' : ''}
+                      onClick={closeMobileMenu}
+                    >
+                      <span className="nav-icon">🏢</span>
+                      {organization.name && organization.name.length > MAX_ORG_NAME_LENGTH
+                        ? `${organization.name.substring(0, MAX_ORG_NAME_LENGTH)}...`
+                        : organization.name}
+                    </Link>
+                  </li>
+                  <li className="mobile-logout-link">
+                    <button onClick={handleLogout} className="mobile-logout-btn">
+                      <span className="nav-icon">🚪</span>
+                      Выйти
+                    </button>
+                  </li>
+                </>
+              )}
             </>
           ) : (
             <>
@@ -90,7 +115,16 @@ const Navbar = () => {
 
         {authenticated && organization && (
           <div className={`nav-org-info ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-            <span className="org-name">{organization.name}</span>
+            <Link 
+              to={`/organization/${organization.id}`}
+              className="org-name"
+              onClick={closeMobileMenu}
+              title={organization.name}
+            >
+              {organization.name && organization.name.length > MAX_ORG_NAME_LENGTH
+                ? `${organization.name.substring(0, MAX_ORG_NAME_LENGTH)}...`
+                : organization.name}
+            </Link>
             <button onClick={handleLogout} className="logout-btn">
               Выйти
             </button>
