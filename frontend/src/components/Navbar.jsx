@@ -83,7 +83,7 @@ const Navbar = () => {
                   <li className="mobile-logout-link">
                     <button onClick={handleLogout} className="mobile-logout-btn">
                       <span className="nav-icon">🚪</span>
-                      Выйти
+                      <span>Выйти</span>
                     </button>
                   </li>
                 </>
@@ -126,7 +126,7 @@ const Navbar = () => {
                 : organization.name}
             </Link>
             <button onClick={handleLogout} className="logout-btn">
-              Выйти
+              <span>Выйти</span>
             </button>
           </div>
         )}
