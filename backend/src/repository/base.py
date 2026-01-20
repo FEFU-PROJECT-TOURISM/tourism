@@ -26,6 +26,8 @@ class BaseRepository:
 
 
     async def create_bulk(self, data: list[BaseModel]):
+        if not data or len(data) == 0:
+            return []
         stmt = insert(self.model).values([d.model_dump() for d in data]).returning(self.model)
         result = await self._session.execute(stmt)
         # loguru.logger.debug(result.scalars().all())

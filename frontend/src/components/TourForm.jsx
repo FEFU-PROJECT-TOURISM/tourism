@@ -2,12 +2,14 @@
 import React, { useState } from 'react';
 import { createTour } from '../services/api';
 import MapComponent from './MapComponent';
+import ErrorNotification from './ErrorNotification';
 import './TourForm.css';
 
 const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +32,16 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
       await createTour(tourData);
       onCreateSuccess();
     } catch (err) {
-      alert('Ошибка создания тура');
+      console.error('Ошибка создания тура:', err);
+      
+      // Формируем детальную информацию об ошибке
+      const errorInfo = {
+        message: err.message || 'Ошибка создания тура',
+        statusCode: err.statusCode || err.response?.status,
+        details: err.details || err.response?.data || null,
+      };
+      
+      setError(errorInfo);
     } finally {
       setLoading(false);
     }
@@ -53,7 +64,9 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="tour-form">
+    <>
+      <ErrorNotification error={error} onClose={() => setError(null)} />
+      <form onSubmit={handleSubmit} className="tour-form">
       <div className="form-header">
         <h3>Настройки тура</h3>
         <p className="form-subtitle">Заполните информацию о вашем туре и установите порядок точек</p>
@@ -183,6 +196,7 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
         )}
       </button>
     </form>
+    </>
   );
 };
 

@@ -15,12 +15,22 @@ class PointView(BaseView):
 
 
     async def create_point(self, data, photos: list | None = None):
-        media_db = await MediaService(db=self._db).create_media_bulk(photos)
-        loguru.logger.debug(media_db)
+        # Если фото не переданы, создаем пустой список медиа
+        if photos and len(photos) > 0:
+            media_db = await MediaService(db=self._db).create_media_bulk(photos)
+            loguru.logger.debug(media_db)
+        else:
+            media_db = []
 
         point = await PointService(db=self._db).create_point(data)
         loguru.logger.debug(point)
-        point_medias = await PointMediaService(db=self._db).create_point_media(point, media_db)
+        
+        # Создаем связи с медиа только если они есть
+        if media_db:
+            point_medias = await PointMediaService(db=self._db).create_point_media(point, media_db)
+        else:
+            point_medias = []
+        
         await self._db.commit()
         return PointWithMedia(**point.model_dump(), media=point_medias)
 
