@@ -17,8 +17,27 @@ const CreatePointForm = ({ onPointCreated }) => {
   // Предпросмотр фото
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files);
+    
+    // Валидация размера файлов (максимум 10 МБ на файл)
+    const maxSize = 10 * 1024 * 1024; // 10 МБ
+    const invalidFiles = files.filter(file => file.size > maxSize);
+    
+    if (invalidFiles.length > 0) {
+      alert(`Некоторые файлы слишком большие (максимум 10 МБ на файл). Пропущено файлов: ${invalidFiles.length}`);
+      const validFiles = files.filter(file => file.size <= maxSize);
+      setPhotos(validFiles);
+      
+      // Освобождаем старые URL
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
+      const urls = validFiles.map(file => URL.createObjectURL(file));
+      setPreviewUrls(urls);
+      return;
+    }
+    
+    // Освобождаем старые URL перед созданием новых
+    previewUrls.forEach(url => URL.revokeObjectURL(url));
+    
     setPhotos(files);
-
     const urls = files.map(file => URL.createObjectURL(file));
     setPreviewUrls(urls);
   };
@@ -33,19 +52,21 @@ const CreatePointForm = ({ onPointCreated }) => {
     setUploading(true);
     setProgress(0);
 
+    let interval = null;
+
     try {
       // Данные точки
       const pointData = { name, description, latitude: +latitude, longitude: +longitude };
 
       // Симуляция прогресса (axios не передаёт onUploadProgress через обычный createPoint)
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setProgress(prev => (prev >= 95 ? 95 : prev + 5));
       }, 200);
 
       // Используем ЕДИНСТВЕННЫЙ API-метод
       const newPoint = await createPoint(pointData, photos);
 
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
       setProgress(100);
 
       // Успешно
@@ -58,12 +79,17 @@ const CreatePointForm = ({ onPointCreated }) => {
       setLatitude('');
       setLongitude('');
       setPhotos([]);
+      // Освобождаем URL перед очисткой
+      previewUrls.forEach(url => URL.revokeObjectURL(url));
       setPreviewUrls([]);
       setTimeout(() => setProgress(0), 500);
     } catch (err) {
-      alert('Ошибка создания точки');
+      console.error('Ошибка создания точки:', err);
+      const errorMessage = err.message || 'Ошибка создания точки';
+      alert(`Ошибка создания точки: ${errorMessage}`);
     } finally {
       setUploading(false);
+      clearInterval(interval);
     }
   };
 

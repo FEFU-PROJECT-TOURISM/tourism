@@ -10,8 +10,8 @@
   background: var(--bg-primary);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -21,8 +21,8 @@
 }
 
 .tour-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-2xl);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.08);
   border-color: var(--primary-light);
 }
 
@@ -107,35 +107,45 @@
 }
 
 .tour-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.3;
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #000000 !important;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  background: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: none !important;
 }
 
 .tour-location {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: var(--text-secondary);
   font-weight: 500;
   margin: 0;
+  line-height: 1.4;
 }
 
 .location-icon {
   font-size: 1rem;
   color: var(--primary);
+  flex-shrink: 0;
 }
 
 .tour-description {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--text-tertiary);
   line-height: 1.6;
   flex-grow: 1;
@@ -143,6 +153,7 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-height: 4.2rem; /* 0.875rem * 1.6 * 3 lines */
 }
 
 .tour-footer {
@@ -244,5 +255,45 @@
 
   .tour-image-wrapper {
     height: 200px;
+  }
+
+  .tour-content {
+    padding: var(--spacing-md);
+  }
+
+  .tour-title {
+    font-size: 1rem;
+    max-height: 3rem;
+  }
+
+  .tour-location {
+    font-size: 0.8rem;
+  }
+
+  .tour-description {
+    font-size: 0.8rem;
+    min-height: 3.84rem; /* 0.8rem * 1.6 * 3 lines */
+  }
+}
+
+@media (max-width: 480px) {
+  .tour-image-wrapper {
+    height: 180px;
+  }
+
+  .tour-badge {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem;
+  }
+
+  .tour-content {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-xs);
+  }
+
+  .tour-title {
+    font-size: 0.95rem;
   }
 }

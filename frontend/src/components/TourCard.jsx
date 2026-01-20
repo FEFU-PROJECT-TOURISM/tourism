@@ -58,7 +58,9 @@ const TourCard = ({ tour, index = 0 }) => {
         </div>
 
         <div className="tour-content">
-          <h3 className="tour-title">{name}</h3>
+          <h3 className="tour-title" title={name}>
+            {name}
+          </h3>
           <p className="tour-location">
             <span className="location-icon">📍</span>
             {pointName}

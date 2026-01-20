@@ -170,5 +170,24 @@
 
   .login-container {
     padding: var(--spacing-xl);
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: var(--spacing-sm);
+  }
+
+  .login-container {
+    padding: var(--spacing-lg);
+  }
+
+  .login-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .form-group input {
+    font-size: 16px; /* Предотвращает зум на iOS */
   }
 }

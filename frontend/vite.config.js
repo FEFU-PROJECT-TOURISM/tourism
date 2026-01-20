@@ -10,4 +10,7 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['ymaps3'], // Исключаем ymaps3 из оптимизации
   },
+  // server: {
+  //   allowedHosts: ['tourism-fefu-vdk.ru']
+  // }
 })
