@@ -32,7 +32,15 @@ api.interceptors.response.use(
       localStorage.removeItem('organization');
       window.location.href = '/login';
     }
-    return Promise.reject(error);
+    // Улучшаем формат ошибки для детального отображения
+    const enhancedError = {
+      ...error,
+      statusCode: error.response?.status,
+      message: error.response?.data?.detail || error.response?.data?.message || error.message || 'Неизвестная ошибка',
+      details: error.response?.data,
+      originalError: error,
+    };
+    return Promise.reject(enhancedError);
   }
 );
 
@@ -58,19 +66,23 @@ export const getPoints = async () => {
   }
 };
 
-export const createPoint = async (pointData, photos) => {
+export const createPoint = async (pointData, photos = []) => {
   try {
     const formData = new FormData();
     formData.append('point_add', JSON.stringify(pointData));
-    photos.forEach(photo => {
-      formData.append('photos', photo);
-    });
+    
+    // Добавляем фото только если они есть
+    if (photos && photos.length > 0) {
+      photos.forEach(photo => {
+        formData.append('photos', photo);
+      });
+    }
 
     const response = await api.post('/point', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      timeout: 60000, // 60 секунд для загрузки файлов
+      timeout: photos && photos.length > 0 ? 60000 : 30000, // 60 секунд для загрузки файлов, 30 для без файлов
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
     });
@@ -79,7 +91,15 @@ export const createPoint = async (pointData, photos) => {
     console.error('Ошибка создания точки:', error);
     if (error.response) {
       // Сервер ответил с ошибкой
-      throw new Error(error.response.data?.detail || error.response.data?.message || 'Ошибка создания точки');
+      const errorDetail = error.response.data?.detail || error.response.data?.message;
+      if (typeof errorDetail === 'string') {
+        throw new Error(errorDetail);
+      } else if (Array.isArray(errorDetail)) {
+        // Pydantic validation errors
+        const errors = errorDetail.map(e => `${e.loc?.join('.')}: ${e.msg}`).join(', ');
+        throw new Error(`Ошибка валидации: ${errors}`);
+      }
+      throw new Error('Ошибка создания точки');
     } else if (error.request) {
       // Запрос был отправлен, но ответа не получено (таймаут, сеть)
       throw new Error('Превышено время ожидания. Проверьте подключение к интернету и размер файлов.');
@@ -97,6 +117,7 @@ export const createTour = async (tourData) => {
     return response.data;
   } catch (error) {
     console.error('Ошибка создания тура:', error);
+    // Ошибка уже обработана в interceptor, просто пробрасываем дальше
     throw error;
   }
 };

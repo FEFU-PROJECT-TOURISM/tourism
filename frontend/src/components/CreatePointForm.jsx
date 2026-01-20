@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { createPoint } from '../services/api';
 import MapComponent from '../components/MapComponent';
+import ErrorNotification from './ErrorNotification';
 import './CreatePointForm.css';
 
 const CreatePointForm = ({ onPointCreated }) => {
@@ -13,6 +14,7 @@ const CreatePointForm = ({ onPointCreated }) => {
   const [previewUrls, setPreviewUrls] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [error, setError] = useState(null);
 
   // Предпросмотр фото
   const handlePhotoChange = (e) => {
@@ -44,8 +46,8 @@ const CreatePointForm = ({ onPointCreated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name || !latitude || !longitude || photos.length === 0) {
-      alert('Заполните все поля и добавьте хотя бы одно фото');
+    if (!name || !latitude || !longitude) {
+      alert('Заполните обязательные поля: название, широта и долгота');
       return;
     }
 
@@ -85,16 +87,25 @@ const CreatePointForm = ({ onPointCreated }) => {
       setTimeout(() => setProgress(0), 500);
     } catch (err) {
       console.error('Ошибка создания точки:', err);
-      const errorMessage = err.message || 'Ошибка создания точки';
-      alert(`Ошибка создания точки: ${errorMessage}`);
+      
+      // Формируем детальную информацию об ошибке
+      const errorInfo = {
+        message: err.message || 'Ошибка создания точки',
+        statusCode: err.statusCode || err.response?.status,
+        details: err.details || err.response?.data || null,
+      };
+      
+      setError(errorInfo);
     } finally {
       setUploading(false);
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
     }
   };
 
   return (
     <div className="create-point-form">
+      <ErrorNotification error={error} onClose={() => setError(null)} />
+      
       <div className="form-header">
         <h3>Создать новую точку</h3>
         <p className="form-subtitle">Добавьте новую точку интереса на карту</p>
@@ -184,7 +195,7 @@ const CreatePointForm = ({ onPointCreated }) => {
 
         <div className="form-group">
           <label htmlFor="point-photos">
-            Фотографии <span className="required">*</span>
+            Фотографии
           </label>
           <div className="file-input-wrapper">
             <input
@@ -233,7 +244,7 @@ const CreatePointForm = ({ onPointCreated }) => {
           </div>
         )}
 
-        <button type="submit" disabled={uploading || !name || !latitude || !longitude || photos.length === 0} className="form-submit">
+        <button type="submit" disabled={uploading || !name || !latitude || !longitude} className="form-submit">
           {uploading ? (
             <>
               <span className="spinner"></span>

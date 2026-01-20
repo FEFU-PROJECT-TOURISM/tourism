@@ -8,7 +8,9 @@ from service.base import BaseService
 class MediaService(BaseService):
 
 
-    async def create_media_bulk(self, files: list) -> list[Media]:
+    async def create_media_bulk(self, files: list | None) -> list[Media]:
+        if not files or len(files) == 0:
+            return []
         medias = []
         for file in files:
             url = await s3_client.upload_file(file)
