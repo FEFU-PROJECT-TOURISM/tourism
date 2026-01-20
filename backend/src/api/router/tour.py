@@ -35,3 +35,31 @@ async def get_tour(
     tour_id: int,
 ):
     return await TourView(db=db).get_tour(tour_id=tour_id)
+
+
+@router.put("/{tour_id}")
+async def update_tour(
+    db: db_dep,
+    tour_id: int,
+    tour: TourAddReq,
+    current_org: current_org_dep,
+):
+    """Обновление тура (только для владельца)"""
+    return await TourView(db=db).update_tour(
+        tour_id=tour_id,
+        tour=tour,
+        current_org_id=current_org.id
+    )
+
+
+@router.delete("/{tour_id}")
+async def delete_tour(
+    db: db_dep,
+    tour_id: int,
+    current_org: current_org_dep,
+):
+    """Удаление тура (только для владельца)"""
+    return await TourView(db=db).delete_tour(
+        tour_id=tour_id,
+        current_org_id=current_org.id
+    )

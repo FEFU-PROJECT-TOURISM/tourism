@@ -131,3 +131,54 @@ export const getTourById = async (tourId) => {
     throw error;
   }
 };
+
+// === Организации ===
+export const getOrganization = async (orgId) => {
+  try {
+    const response = await api.get(`/organization/${orgId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка загрузки организации ${orgId}:`, error);
+    throw error;
+  }
+};
+
+export const getOrganizationTours = async (orgId) => {
+  try {
+    const response = await api.get(`/organization/${orgId}/tours`);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка загрузки туров организации ${orgId}:`, error);
+    throw error;
+  }
+};
+
+export const updateOrganization = async (orgId, orgData) => {
+  try {
+    const response = await api.put(`/organization/${orgId}`, orgData);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка обновления организации ${orgId}:`, error);
+    throw error;
+  }
+};
+
+export const updateTour = async (tourId, tourData) => {
+  try {
+    const response = await api.put(`/tour/${tourId}`, tourData);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка обновления тура ${tourId}:`, error);
+    throw error;
+  }
+};
+
+export const deleteTour = async (tourId) => {
+  try {
+    const response = await api.delete(`/tour/${tourId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Ошибка удаления тура ${tourId}:`, error);
+    throw error;
+  }
+};

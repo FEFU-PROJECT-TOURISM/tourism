@@ -146,8 +146,13 @@ const TourPage = () => {
             </div>
             <div className="organization-card">
               <div className="org-info">
-                <h3>{tour.organization.name}</h3>
+                <Link to={`/organization/${tour.organization.id}`} className="org-link">
+                  <h3>{tour.organization.name}</h3>
+                </Link>
                 <p className="org-email">{tour.organization.email}</p>
+                {tour.organization.address && (
+                  <p className="org-address">📍 {tour.organization.address}</p>
+                )}
                 {tour.organization.phones && tour.organization.phones.length > 0 && (
                   <div className="org-phones">
                     <span className="phones-label">Телефоны:</span>
