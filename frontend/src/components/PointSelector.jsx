@@ -12,7 +12,8 @@ const PointSelector = ({ selectedPoints = [], onToggle }) => {
     const loadPoints = async () => {
       try {
         const data = await getPoints();
-        setPoints(Array.isArray(data) ? data : []);
+        const pointsArray = Array.isArray(data) ? data : [];
+        setPoints(pointsArray);
       } catch (err) {
         console.error('Не удалось загрузить точки:', err);
       } finally {
@@ -23,10 +24,30 @@ const PointSelector = ({ selectedPoints = [], onToggle }) => {
     loadPoints();
   }, []);
 
-  const filteredPoints = points.filter(point =>
-    point.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    point.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPoints = points.filter(point => {
+    if (!searchQuery) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      point.name?.toLowerCase().includes(query) ||
+      point.description?.toLowerCase().includes(query) ||
+      point.latitude?.toString().includes(query) ||
+      point.longitude?.toString().includes(query)
+    );
+  });
+
+  // Ограничиваем количество отображаемых точек
+  const MAX_DISPLAYED_POINTS = 7;
+  const displayedPoints = filteredPoints.slice(0, MAX_DISPLAYED_POINTS);
+  const hasMorePoints = filteredPoints.length > MAX_DISPLAYED_POINTS;
+
+  // Функция для получения URL изображения
+  const getImageUrl = (point) => {
+    const media = point.media;
+    if (Array.isArray(media) && media.length > 0) {
+      return media[0]?.url || null;
+    }
+    return null;
+  };
 
   if (loading) {
     return (
@@ -80,43 +101,82 @@ const PointSelector = ({ selectedPoints = [], onToggle }) => {
           <p className="empty-hint">Попробуйте изменить поисковый запрос</p>
         </div>
       ) : (
-        <div className="points-grid">
-          {filteredPoints.map(point => {
-            const isSelected = selectedPoints.some(p => p.id === point.id);
-            const imageUrl = point.media?.[0]?.url;
-            
-            return (
-              <div
-                key={point.id}
-                className={`point-card ${isSelected ? 'selected' : ''}`}
-                onClick={() => onToggle(point)}
-              >
-                <div className="point-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => onToggle(point)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  <span className="checkmark"></span>
-                </div>
-                
-                {imageUrl && (
-                  <div className="point-image">
-                    <img src={imageUrl} alt={point.name} />
+        <>
+          <div className="points-grid">
+            {displayedPoints.map(point => {
+              const isSelected = selectedPoints.some(p => p.id === point.id);
+              const imageUrl = getImageUrl(point);
+
+              return (
+                <div
+                  key={point.id}
+                  className={`point-card ${isSelected ? 'selected' : ''}`}
+                  onClick={() => onToggle(point)}
+                >
+                  {/* Изображение */}
+                  {imageUrl ? (
+                    <div className="point-image-container">
+                      <img 
+                        src={imageUrl} 
+                        alt={point.name}
+                        className="point-image"
+                        loading="lazy"
+                        onError={(e) => {
+                          console.error('Ошибка загрузки изображения:', imageUrl);
+                          e.target.style.display = 'none';
+                          e.target.parentElement.classList.add('image-error');
+                        }}
+                        onLoad={() => {
+                          console.log('Изображение загружено:', imageUrl);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="point-image-container point-image-placeholder">
+                      <span className="placeholder-icon">📷</span>
+                      <span className="placeholder-text">Нет фото</span>
+                    </div>
+                  )}
+
+                  {/* Контент */}
+                  <div className="point-content">
+                    <div className="point-name-wrapper">
+                      <h4 className="point-name">{point.name}</h4>
+                      <div className="point-checkbox-wrapper">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggle(point)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="point-checkbox-input"
+                        />
+                      </div>
+                    </div>
+                    <p className="point-description">
+                      {point.description || 'Описание отсутствует'}
+                    </p>
+                    <div className="point-coords">
+                      <span className="coord-label">📍</span>
+                      <span className="coord-text">
+                        {point.latitude?.toFixed(6)}, {point.longitude?.toFixed(6)}
+                      </span>
+                    </div>
                   </div>
-                )}
-                
-                <div className="point-content">
-                  <h4 className="point-name">{point.name}</h4>
-                  <p className="point-description">
-                    {point.description || 'Описание отсутствует'}
-                  </p>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+          {hasMorePoints && (
+            <div className="points-limit-notice">
+              <p>
+                <strong>Показано {displayedPoints.length} из {filteredPoints.length} точек.</strong>
+                {searchQuery 
+                  ? ' Уточните поисковый запрос, чтобы увидеть больше результатов.'
+                  : ' Используйте поиск, чтобы найти нужную точку.'}
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { createTour } from '../services/api';
 import MapComponent from './MapComponent';
-import ErrorNotification from './ErrorNotification';
+import StatusMessage from './StatusMessage';
 import './TourForm.css';
 
 const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
@@ -10,15 +10,18 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || selectedPoints.length === 0) {
-      alert('Введите название и выберите хотя бы одну точку');
+      setError({ message: 'Введите название и выберите хотя бы одну точку' });
       return;
     }
 
     setLoading(true);
+    setError(null);
+    setSuccess(null);
     try {
       // Формируем данные тура с порядком точек
       const tourData = {
@@ -30,6 +33,7 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
         }))
       };
       await createTour(tourData);
+      setSuccess({ message: 'Тур успешно создан!' });
       onCreateSuccess();
     } catch (err) {
       console.error('Ошибка создания тура:', err);
@@ -65,7 +69,6 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
 
   return (
     <>
-      <ErrorNotification error={error} onClose={() => setError(null)} />
       <form onSubmit={handleSubmit} className="tour-form">
       <div className="form-header">
         <h3>Настройки тура</h3>
@@ -105,16 +108,34 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
             <label>Порядок точек маршрута</label>
             <p className="form-hint">Измените порядок точек, чтобы задать маршрут тура</p>
             <div className="points-order-list">
-              {selectedPoints.map((point, index) => (
-                <div key={point.id} className="order-item">
-                  <div className="order-number">{index + 1}</div>
-                  <div className="order-content">
-                    <div className="order-point-name">{point.name}</div>
-                    <div className="order-point-desc">
-                      {point.description || 'Без описания'}
+              {selectedPoints.map((point, index) => {
+                const imageUrl = point.media?.[0]?.url;
+                return (
+                  <div key={point.id} className="order-item">
+                    <div className="order-number">{index + 1}</div>
+                    <div className="order-point-image">
+                      {imageUrl ? (
+                        <img 
+                          src={imageUrl} 
+                          alt={point.name}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.classList.add('image-error');
+                          }}
+                        />
+                      ) : (
+                        <div className="order-image-placeholder">
+                          <span className="placeholder-icon">📷</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  <div className="order-actions">
+                    <div className="order-content">
+                      <div className="order-point-name">{point.name}</div>
+                      <div className="order-point-desc">
+                        {point.description || 'Без описания'}
+                      </div>
+                    </div>
+                    <div className="order-actions">
                     <button
                       type="button"
                       onClick={() => movePoint(index, 'up')}
@@ -141,9 +162,10 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
                     >
                       ✕
                     </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -177,6 +199,23 @@ const TourForm = ({ selectedPoints, onPointsReorder, onCreateSuccess }) => {
           </p>
         )}
       </div>
+
+      {error && (
+        <StatusMessage 
+          message={error.message} 
+          type="error" 
+          statusCode={error.statusCode}
+          details={error.details}
+          onClose={() => setError(null)}
+        />
+      )}
+      {success && (
+        <StatusMessage 
+          message={success.message} 
+          type="success"
+          onClose={() => setSuccess(null)}
+        />
+      )}
 
       <button 
         type="submit" 
